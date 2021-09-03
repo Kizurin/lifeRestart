@@ -9,7 +9,7 @@ class App{
     #life;
     #pages;
     #talentSelected = new Set();
-    #totalMax=40;
+    #totalMax=60;
     #isEnd = false;
     #selectedExtendTalent = null;
     #hintTimeout;
@@ -63,7 +63,7 @@ class App{
             <div class="head" style="font-size: 1.6rem">天赋抽卡</div>
             <button id="random" class="mainbtn" style="top: 50%;">10连抽！</button>
             <ul id="talents" class="selectlist"></ul>
-            <button id="next" class="mainbtn" style="top:auto; bottom:0.1em">我选好了！</button>
+            <button id="next" class="mainbtn" style="top:auto; bottom:0.1em">选好天赋了！</button>
         </div>
         `);
 
@@ -113,10 +113,10 @@ class App{
             .find('#next')
             .click(()=>{
                 if(this.#talentSelected.size==0) {
-                    this.hint('请选择天赋');
+                    this.hint('请选择至少一个天赋');
                     return;
                 }
-                this.#totalMax = 40 + this.#life.getTalentAllocationAddition(Array.from(this.#talentSelected).map(({id})=>id));
+                this.#totalMax = 60 + this.#life.getTalentAllocationAddition(Array.from(this.#talentSelected).map(({id})=>id));
                 this.switch('property');
             })
 
@@ -128,7 +128,6 @@ class App{
                 <div id="total" style="font-size:1rem; font-weight:normal;">可用属性点：0</div>
             </div>
             <ul id="propertyAllocation" class="propinitial"></ul>
-            <button id="random" class="mainbtn" style="top:auto; bottom:7rem">随机分配</button>
             <button id="start" class="mainbtn" style="top:auto; bottom:0.1rem">开始新人生</button>
         </div>
         `);
@@ -187,10 +186,10 @@ class App{
             return {group, get, set};
         }
 
-        groups.CHR = getBtnGroups("颜值", 0, 10); // 颜值 charm CHR
-        groups.INT = getBtnGroups("智力", 0, 10); // 智力 intelligence INT
-        groups.STR = getBtnGroups("体质", 0, 10); // 体质 strength STR
-        groups.MNY = getBtnGroups("家境", 0, 10); // 家境 money MNY
+        groups.CHR = getBtnGroups("颜值（11）", 0, 15); // 颜值 charm CHR
+        groups.INT = getBtnGroups("智力（501）", 0, 15); // 智力 intelligence INT
+        groups.STR = getBtnGroups("体质（2001）", 0, 15); // 体质 strength STR
+        groups.MNY = getBtnGroups("家境（11）", 0, 15); // 家境 money MNY
 
         const ul = propertyPage.find('#propertyAllocation');
 
@@ -285,7 +284,7 @@ class App{
                 this.#life.talentExtend(this.#selectedExtendTalent);
                 this.#selectedExtendTalent = null;
                 this.#talentSelected.clear();
-                this.#totalMax = 40;
+                this.#totalMax = 60;
                 this.#isEnd = false;
                 this.switch('index');
             });
@@ -323,7 +322,7 @@ class App{
                 clear: ()=>{
                     talentPage.find('ul.selectlist').empty();
                     talentPage.find('#random').show();
-                    this.#totalMax = 40;
+                    this.#totalMax = 60;
                 },
             },
             property: {
