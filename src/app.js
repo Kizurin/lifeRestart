@@ -85,7 +85,7 @@ class App{
                                 li.removeClass('selected')
                                 this.#talentSelected.delete(talent);
                             } else {
-                                if(this.#talentSelected.size==10) {
+                                if(this.#talentSelected.size<=0) {
                                     return;
                                 }
 
@@ -200,29 +200,12 @@ class App{
 
         propertyPage
             .find('#random')
-            .click(()=>{
-                let t = this.#totalMax;
-                const arr = [10, 10, 10, 10];
-                while(t>0) {
-                    const sub = Math.round(Math.random() * (Math.min(t, 10) - 1)) + 1;
-                    while(true) {
-                        const select = Math.floor(Math.random() * 4) % 4;
-                        if(arr[select] - sub <0) continue;
-                        arr[select] -= sub;
-                        t -= sub;
-                        break;
-                    }
-                }
-                groups.CHR.set(10 - arr[0]);
-                groups.INT.set(10 - arr[1]);
-                groups.STR.set(10 - arr[2]);
-                groups.MNY.set(10 - arr[3]);
-            });
+            .click();
 
         propertyPage
             .find('#start')
             .click(()=>{
-                if(total()!=this.#totalMax) {
+                if(total()<=0) {
                     this.hint(`你还有${this.#totalMax-total()}属性点没有分配完`);
                     return;
                 }
