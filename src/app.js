@@ -63,7 +63,7 @@ class App{
             <div class="head" style="font-size: 1.6rem">天赋抽卡</div>
             <button id="random" class="mainbtn" style="top: 50%;">10连抽！</button>
             <ul id="talents" class="selectlist"></ul>
-            <button id="next" class="mainbtn" style="top:auto; bottom:0.1em">我选好了！</button>
+            <button id="next" class="mainbtn" style="top:auto; bottom:0.1em">选好天赋了</button>
         </div>
         `);
 
@@ -85,7 +85,7 @@ class App{
                                 li.removeClass('selected')
                                 this.#talentSelected.delete(talent);
                             } else {
-                                if(this.#talentSelected.size<=0) {
+                                if(this.#talentSelected.size==10) {
                                     return;
                                 }
 
@@ -128,7 +128,7 @@ class App{
                 <div id="total" style="font-size:1rem; font-weight:normal;">可用属性点：0</div>
             </div>
             <ul id="propertyAllocation" class="propinitial"></ul>
-            <button id="random" class="mainbtn" style="top:auto; bottom:7rem">随机分配坏了</button>
+            <button id="random" class="mainbtn" style="top:auto; bottom:7rem">随机分配</button>
             <button id="start" class="mainbtn" style="top:auto; bottom:0.1rem">开始新人生</button>
         </div>
         `);
@@ -199,9 +199,30 @@ class App{
         }
 
         propertyPage
+            .find('#random')
+            .click(()=>{
+                let t = this.#totalMax;
+                const arr = [10, 10, 10, 10];
+                while(t>0) {
+                    const sub = Math.round(Math.random() * (Math.min(t, 10) - 1)) + 1;
+                    while(true) {
+                        const select = Math.floor(Math.random() * 4) % 4;
+                        if(arr[select] - sub <0) continue;
+                        arr[select] -= sub;
+                        t -= sub;
+                        break;
+                    }
+                }
+                groups.CHR.set(10 - arr[0]);
+                groups.INT.set(10 - arr[1]);
+                groups.STR.set(10 - arr[2]);
+                groups.MNY.set(10 - arr[3]);
+            });
+
+        propertyPage
             .find('#start')
             .click(()=>{
-                if(total()<=0) {
+                if(total()!=this.#totalMax) {
                     this.hint(`你还有${this.#totalMax-total()}属性点没有分配完`);
                     return;
                 }
@@ -210,7 +231,7 @@ class App{
                     INT: groups.INT.get(),
                     STR: groups.STR.get(),
                     MNY: groups.MNY.get(),
-                    SPR: 15,
+                    SPR: 10,
                     TLT: Array.from(this.#talentSelected).map(({id})=>id),
                 });
                 this.switch('trajectory');
