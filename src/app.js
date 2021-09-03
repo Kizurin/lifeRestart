@@ -63,7 +63,7 @@ class App{
             <div class="head" style="font-size: 1.6rem">天赋抽卡</div>
             <button id="random" class="mainbtn" style="top: 50%;">10连抽！</button>
             <ul id="talents" class="selectlist"></ul>
-            <button id="next" class="mainbtn" style="top:auto; bottom:0.1em">选好天赋了！</button>
+            <button id="next" class="mainbtn" style="top:auto; bottom:0.1em">我选好了！</button>
         </div>
         `);
 
@@ -113,7 +113,7 @@ class App{
             .find('#next')
             .click(()=>{
                 if(this.#talentSelected.size==0) {
-                    this.hint('请选择至少一个天赋');
+                    this.hint('请选择天赋');
                     return;
                 }
                 this.#totalMax = 60 + this.#life.getTalentAllocationAddition(Array.from(this.#talentSelected).map(({id})=>id));
@@ -128,6 +128,7 @@ class App{
                 <div id="total" style="font-size:1rem; font-weight:normal;">可用属性点：0</div>
             </div>
             <ul id="propertyAllocation" class="propinitial"></ul>
+            <button id="random" class="mainbtn" style="top:auto; bottom:7rem" disabled="disabled">随机分配坏了</button>
             <button id="start" class="mainbtn" style="top:auto; bottom:0.1rem">开始新人生</button>
         </div>
         `);
@@ -196,6 +197,10 @@ class App{
         for(const type in groups) {
             ul.append(groups[type].group);
         }
+
+        propertyPage
+            .find('#random')
+            .click();
 
         propertyPage
             .find('#start')
