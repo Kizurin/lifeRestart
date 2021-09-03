@@ -222,7 +222,7 @@ class App{
         propertyPage
             .find('#start')
             .click(()=>{
-                if(total()!=this.#totalMax) {
+                if(total()<=0) {
                     this.hint(`你还有${this.#totalMax-total()}属性点没有分配完`);
                     return;
                 }
