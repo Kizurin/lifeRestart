@@ -9,7 +9,7 @@ class App{
     #life;
     #pages;
     #talentSelected = new Set();
-    #totalMax=20;
+    #totalMax=40;
     #isEnd = false;
     #selectedExtendTalent = null;
     #hintTimeout;
@@ -63,7 +63,7 @@ class App{
             <div class="head" style="font-size: 1.6rem">天赋抽卡</div>
             <button id="random" class="mainbtn" style="top: 50%;">10连抽！</button>
             <ul id="talents" class="selectlist"></ul>
-            <button id="next" class="mainbtn" style="top:auto; bottom:0.1em">请选择3个</button>
+            <button id="next" class="mainbtn" style="top:auto; bottom:0.1em">请选择10个</button>
         </div>
         `);
 
@@ -84,11 +84,7 @@ class App{
                             if(li.hasClass('selected')) {
                                 li.removeClass('selected')
                                 this.#talentSelected.delete(talent);
-                            } else {
-                                if(this.#talentSelected.size==3) {
-                                    this.hint('只能选3个天赋');
-                                    return;
-                                }
+                            } 
 
                                 const exclusive = this.#life.exclusive(
                                     Array.from(this.#talentSelected).map(({id})=>id),
@@ -113,10 +109,6 @@ class App{
         talentPage
             .find('#next')
             .click(()=>{
-                if(this.#talentSelected.size!=3) {
-                    this.hint('请选择3个天赋');
-                    return;
-                }
                 this.#totalMax = 20 + this.#life.getTalentAllocationAddition(Array.from(this.#talentSelected).map(({id})=>id));
                 this.switch('property');
             })
@@ -223,16 +215,12 @@ class App{
         propertyPage
             .find('#start')
             .click(()=>{
-                if(total()!=this.#totalMax) {
-                    this.hint(`你还有${this.#totalMax-total()}属性点没有分配完`);
-                    return;
-                }
                 this.#life.restart({
                     CHR: groups.CHR.get(),
                     INT: groups.INT.get(),
                     STR: groups.STR.get(),
                     MNY: groups.MNY.get(),
-                    SPR: 5,
+                    SPR: 15,
                     TLT: Array.from(this.#talentSelected).map(({id})=>id),
                 });
                 this.switch('trajectory');
@@ -307,7 +295,7 @@ class App{
                 this.#life.talentExtend(this.#selectedExtendTalent);
                 this.#selectedExtendTalent = null;
                 this.#talentSelected.clear();
-                this.#totalMax = 20;
+                this.#totalMax = 40;
                 this.#isEnd = false;
                 this.switch('index');
             });
@@ -345,7 +333,7 @@ class App{
                 clear: ()=>{
                     talentPage.find('ul.selectlist').empty();
                     talentPage.find('#random').show();
-                    this.#totalMax = 20;
+                    this.#totalMax = 40;
                 },
             },
             property: {
@@ -379,9 +367,6 @@ class App{
                             if(li.hasClass('selected')) {
                                 this.#selectedExtendTalent = null;
                                 li.removeClass('selected');
-                            } else if(this.#selectedExtendTalent != null) {
-                                this.hint('只能继承一个天赋');
-                                return;
                             } else {
                                 this.#selectedExtendTalent = talent.id;
                                 li.addClass('selected');
