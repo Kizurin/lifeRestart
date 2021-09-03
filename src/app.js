@@ -63,7 +63,7 @@ class App{
             <div class="head" style="font-size: 1.6rem">天赋抽卡</div>
             <button id="random" class="mainbtn" style="top: 50%;">10连抽！</button>
             <ul id="talents" class="selectlist"></ul>
-            <button id="next" class="mainbtn" style="top:auto; bottom:0.1em">请选择天赋</button>
+            <button id="next" class="mainbtn" style="top:auto; bottom:0.1em">我选好了！</button>
         </div>
         `);
 
@@ -197,10 +197,6 @@ class App{
         for(const type in groups) {
             ul.append(groups[type].group);
         }
-
-        propertyPage
-            .find('#random')
-            .click();
 
         propertyPage
             .find('#start')
