@@ -1,6 +1,7 @@
 import { max, sum } from './functions/util.js';
 import { summary } from './functions/summary.js'
 import Life from './life.js'
+
 class App{
     constructor(){
         this.#life = new Life();
@@ -41,6 +42,7 @@ class App{
         <div id="main">
             <div id="cnt" class="head">已重开1次</div>
             <button id="rank">排行榜</button>
+            <button id="themeToggleBtn">黑</button>
             <div id="title">
                 人生重开模拟器<br>
                 <div style="font-size:1.5rem; font-weight:normal;">这垃圾人生一秒也不想呆了</div>
@@ -48,6 +50,9 @@ class App{
             <button id="restart" class="mainbtn"><span class="iconfont">&#xe6a7;</span>立即重开</button>
         </div>
         `);
+
+        // Init theme
+        this.setTheme(localStorage.getItem('theme'))
 
         indexPage
             .find('#restart')
@@ -57,13 +62,25 @@ class App{
             .find('#rank')
             .click(()=>this.hint('别卷了！没有排行榜'));
 
+        indexPage
+            .find("#themeToggleBtn")
+            .click(() => {
+                if(localStorage.getItem('theme') == 'light') {
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    localStorage.setItem('theme', 'light');
+                }
+
+                this.setTheme(localStorage.getItem('theme'))
+            });
+
         // Talent
         const talentPage = $(`
         <div id="main">
             <div class="head" style="font-size: 1.6rem">天赋抽卡</div>
             <button id="random" class="mainbtn" style="top: 50%;">10连抽！</button>
             <ul id="talents" class="selectlist"></ul>
-            <button id="next" class="mainbtn" style="top:auto; bottom:0.1em">选好天赋了</button>
+            <button id="next" class="mainbtn" style="top:auto; bottom:0.1em">请选择</button>
         </div>
         `);
 
@@ -85,7 +102,8 @@ class App{
                                 li.removeClass('selected')
                                 this.#talentSelected.delete(talent);
                             } else {
-                                if(this.#talentSelected.size==10) {
+                                if(this.#talentSelected.size>=10) {
+                                    this.hint('最多只能选10个天赋');
                                     return;
                                 }
 
@@ -112,8 +130,8 @@ class App{
         talentPage
             .find('#next')
             .click(()=>{
-                if(this.#talentSelected.size==0) {
-                    this.hint('请选择天赋');
+                if(this.#talentSelected.size<=0) {
+                    this.hint('请选择至少一个天赋');
                     return;
                 }
                 this.#totalMax = 40 + this.#life.getTalentAllocationAddition(Array.from(this.#talentSelected).map(({id})=>id));
@@ -128,7 +146,7 @@ class App{
                 <div id="total" style="font-size:1rem; font-weight:normal;">可用属性点：0</div>
             </div>
             <ul id="propertyAllocation" class="propinitial"></ul>
-            <button id="random" class="mainbtn" style="top:auto; bottom:7rem">随机分配</button>
+            <button id="random" class="mainbtn" style="top:auto; bottom:7rem">别点随机分配</button>
             <button id="start" class="mainbtn" style="top:auto; bottom:0.1rem">开始新人生</button>
         </div>
         `);
@@ -165,8 +183,8 @@ class App{
                 freshTotal();
             }
             btnAdd.click(()=>{
-                if(total() == this.#totalMax) {
-                    this.hint('没用可分配的点数了');
+                if(total() >= this.#totalMax) {
+                    this.hint('没有可分配的点数了');
                     return;
                 }
                 set(get()+1);
@@ -222,8 +240,11 @@ class App{
         propertyPage
             .find('#start')
             .click(()=>{
-                if(total()<=0) {
-                    this.hint(`你还有${this.#totalMax-total()}属性点没有分配完`);
+                if(total() <= 1) {
+                    this.hint(`请至少分配1点`);
+                    return;
+                } else if (total() >= 40) {
+                    this.hint(`最多分配40点哦`);
                     return;
                 }
                 this.#life.restart({
@@ -236,11 +257,17 @@ class App{
                 });
                 this.switch('trajectory');
                 this.#pages.trajectory.born();
+                $(document).keydown(function(event){
+                    if(event.which == 32 || event.which == 13){
+                        $('#lifeTrajectory').click();
+                    }
+                })
             });
 
         // Trajectory
         const trajectoryPage = $(`
         <div id="main">
+            <ul id="lifeProperty" class="lifeProperty"></ul>
             <ul id="lifeTrajectory" class="lifeTrajectory"></ul>
             <button id="summary" class="mainbtn" style="top:auto; bottom:0.1rem">人生总结</button>
         </div>
@@ -268,8 +295,19 @@ class App{
                 li.appendTo('#lifeTrajectory');
                 $("#lifeTrajectory").scrollTop($("#lifeTrajectory")[0].scrollHeight);
                 if(isEnd) {
+                    $(document).unbind("keydown");
                     this.#isEnd = true;
                     trajectoryPage.find('#summary').show();
+                } else {
+                    // 如未死亡，更新数值
+                    // Update properties if not die yet
+                    const property = this.#life.getLastRecord();
+                    $("#lifeProperty").html(`
+                    <li>颜值：${property.CHR} </li> 
+                    <li>智力：${property.INT} </li> 
+                    <li>体质：${property.STR} </li> 
+                    <li>家境：${property.MNY} </li>
+                    <li>快乐：${property.SPR} </li>`);
                 }
             });
 
@@ -456,6 +494,16 @@ class App{
                 this.#hintTimeout = setTimeout(hideBanners, 3000);
             }
         });
+    }
+
+    setTheme(theme) {
+        const themeLink = $(document).find('#themeLink');
+
+        if(theme == 'light') {
+            themeLink.attr('href', 'light.css');
+        } else {
+            themeLink.attr('href', 'dark.css');
+        }
     }
 
     get times() {return JSON.parse(localStorage.times||'0') || 0;}
