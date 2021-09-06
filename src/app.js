@@ -80,7 +80,7 @@ class App{
             <div class="head" style="font-size: 1.6rem">天赋抽卡</div>
             <button id="random" class="mainbtn" style="top: 50%;">10连抽！</button>
             <ul id="talents" class="selectlist"></ul>
-            <button id="next" class="mainbtn" style="top:auto; bottom:0.1em">请选择</button>
+            <button id="next" class="mainbtn" style="top:auto; bottom:0.1em">请选择天赋</button>
         </div>
         `);
 
@@ -146,7 +146,7 @@ class App{
                 <div id="total" style="font-size:1rem; font-weight:normal;">可用属性点：0</div>
             </div>
             <ul id="propertyAllocation" class="propinitial"></ul>
-            <button id="random" class="mainbtn" style="top:auto; bottom:7rem">别点随机分配</button>
+            <button id="random" class="mainbtn" style="top:auto; bottom:7rem">随机分配</button>
             <button id="start" class="mainbtn" style="top:auto; bottom:0.1rem">开始新人生</button>
         </div>
         `);
